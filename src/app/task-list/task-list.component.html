@@ -1,0 +1,118 @@
+<nav>
+   
+  <button class="btn btn-success" data-toggle="modal" data-target="#myModal" id="add_task_btn"> <i class=" glyphicon glyphicon-plus"></i> Add Task</button>
+   <p-calendar [(ngModel)]="value" dateFormat="yy-mm-dd" placeholder="Choose Date" name="given_date" class="g_date"></p-calendar>
+    <select class="form-control task_by_date" style="width: 20%; display: inline;"  (change)="get_tasks_by_date($event.target.value)" >
+    <option *ngFor="let type of filterTypes" [value]="type.value">{{type.display}}
+    </option>
+    </select>
+
+    <select class="form-control user_all_class" style="width: 20%; display: inline;"  (change)="get_tasks_by_user($event.target.value)">
+    <<option value="">Tasks By Users</option>}
+    <option *ngFor="let user of users" [value]="user.created_by">{{user.created_by}}
+    </option>
+    </select>
+
+    <p-autoComplete [(ngModel)]="text" [suggestions]="results" (completeMethod)="search_task($event)" placeholder="Type Task Name" ></p-autoComplete>
+    <button type="button" name="search_full_text" id="search_full_text" class="btn btn-primary" (click)="search_full_text()">Search Full Text</button>
+
+  </nav>
+  <br>
+
+  <!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add New Task</h4>
+      </div>
+      <div class="modal-body">
+
+        <!-- Add Task Form -->
+		 <form class="form-horizontal" [formGroup]="form" (submit)="add_task(form.value)"  >
+		  <div class="form-group">
+		    <label class="control-label col-sm-2" for="task_name">Task Name:</label>
+
+		    <div class="col-sm-10">
+		      
+        <input formControlName="task_name" name="task_name" id="task_name" class="form-control" value=""  />
+         
+
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label class="control-label col-sm-2" for="description">Description:</label>
+		    <div class="col-sm-10"> 
+		      <textarea id="description" formControlName="description" name="description" style="width: 100%;" ></textarea>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label class="control-label col-sm-2" for="task_end_date">Task End Date:</label>
+		    <div class="col-sm-10">
+		     <!-- <input type="text" class="form-control datepicker" id="datepicker" formControlName="task_end_date"  name="task_end_date" placeholder="Enter Task Name"> -->
+
+         <div class="ui-g ui-fluid">
+        <div class="ui-g-12 ui-md-4">
+        <p-calendar formControlName="date" name="date" class="cal_date"  dateFormat="yy-mm-dd" utc="true"></p-calendar>
+        </div>
+        </div> 
+
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label class="control-label col-sm-2" for="created_by">Created By:</label>
+		    <div class="col-sm-10">
+		      <input type="text" class="form-control" id="created_by" formControlName="created_by" name="created_by" placeholder="Created By">
+          <input type="hidden" name="t_id" id="t_id" value="">
+		    </div>
+		  </div>
+		  <div class="form-group"> 
+		    <div class="col-sm-offset-2 col-sm-10">
+		      <button type="submit" [disabled]="!form.valid" class="btn btn-success" >Submit</button>
+		    </div>
+		  </div>
+		</form>
+       <!-- End Add Task Form -->
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" >Close</button>
+      </div>
+    </div>
+
+  </div> 
+</div>
+
+ <div id="msg_response" style="display: none;" ><div class="alert alert-success alert-dismissable">
+                           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> {{ responseMessage }} </div> </div>
+
+<!-- Model Ends -->
+
+
+<div class="table-responsive">
+<table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+  <thead>
+    <tr>
+      <th>Task Name</th>
+      <th>End Date</th>
+      <th>Created By</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+   <tr *ngFor="let value of items;">
+     <td><a routerLink="/task-details/{{ value.id }}" routerLinkActive="active">{{ value.task_name }}</a></td>
+     <td>{{ value.task_end_date | date: 'dd/MM/yyyy' }}</td>
+     <td>{{ value.created_by }}</td>
+     <td><button name="Update" class="btn btn-warning" (click)="get_specific_task(value.id)" > <i class="glyphicon glyphicon-pencil"></i> Update</button> | <button name="Delete" (click)="delete_task(value.id)"  class="btn btn-danger"> <i class="glyphicon glyphicon-trash" ></i> Delete</button>  </td>
+   </tr>
+   
+  </tbody>
+</table>
+
+
+</div>
